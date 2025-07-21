@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.ScoreRuleDimensionMapper">
+    
+    <resultMap type="org.example.domain.ScoreRuleDimension" id="ScoreRuleDimensionResult">
+        <result property="id"    column="id"    />
+        <result property="ruleId"    column="rule_id"    />
+        <result property="dimension"    column="dimension"    />
+        <result property="scale"    column="scale"    />
+        <result property="sort"    column="sort"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <resultMap type="org.example.domain.vo.ScoreRuleDimensionVo" id="ScoreRuleDimensionVoResult">
+        <result property="id"    column="id"    />
+        <result property="ruleId"    column="rule_id"    />
+        <result property="dimension"    column="dimension"    />
+        <result property="scale"    column="scale"    />
+        <result property="sort"    column="sort"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="rule_name"    column="name"    />
+    </resultMap>
+
+    <sql id="selectScoreRuleDimensionVo">
+        select id, rule_id, dimension, scale, sort, status, remark, del_flag from score_rule_dimension
+    </sql>
+
+    <select id="selectScoreRuleDimensionList" parameterType="org.example.domain.ScoreRuleDimension" resultMap="ScoreRuleDimensionResult">
+        <include refid="selectScoreRuleDimensionVo"/>
+        <where>
+            del_flag='0'
+            <if test="ruleId != null "> and rule_id = #{ruleId}</if>
+            <if test="dimension != null  and dimension != ''"> and dimension = #{dimension}</if>
+            <if test="scale != null "> and `scale` = #{scale}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <sql id="selectScoreRuleDimensionVoWithRuleName">
+        SELECT
+            d.id,
+            d.rule_id,
+            d.dimension,
+            d.scale,
+            d.sort,
+            d.status,
+            d.remark,
+            d.del_flag,
+            r.name
+        FROM score_rule_dimension d
+                 LEFT JOIN score_rule r ON d.rule_id = r.id
+    </sql>
+
+
+    <select id="selectScoreRuleDimensionVoById" parameterType="Long" resultMap="ScoreRuleDimensionVoResult">
+        <include refid="selectScoreRuleDimensionVoWithRuleName"/>
+        where e.id = #{id} and del_flag='0'
+    </select>
+
+    <select id="selectScoreRuleDimensionVoList" resultMap="ScoreRuleDimensionVoResult">
+        <include refid="selectScoreRuleDimensionVoWithRuleName"/>
+        where del_flag='0'
+    </select>
+
+
+    <select id="selectScoreRuleDimensionById" parameterType="Long" resultMap="ScoreRuleDimensionResult">
+        <include refid="selectScoreRuleDimensionVo"/>
+        where id = #{id} and del_flag='0'
+    </select>
+
+    <select id="selectScoreRuleDimensionByRuleId" resultType="org.example.domain.ScoreRuleDimension">
+        <include refid="selectScoreRuleDimensionVo"/>
+        where relu_id = #{reluId} and del_flag='0'
+    </select>
+
+    <insert id="insertScoreRuleDimension" parameterType="org.example.domain.ScoreRuleDimension" useGeneratedKeys="true" keyProperty="id">
+        insert into score_rule_dimension
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ruleId != null">rule_id,</if>
+            <if test="dimension != null">dimension,</if>
+            <if test="scale != null">`scale`,</if>
+            <if test="sort != null">sort,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ruleId != null">#{ruleId},</if>
+            <if test="dimension != null">#{dimension},</if>
+            <if test="scale != null">#{scale},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScoreRuleDimension" parameterType="org.example.domain.ScoreRuleDimension">
+        update score_rule_dimension
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="ruleId != null">rule_id = #{ruleId},</if>
+            <if test="dimension != null">dimension = #{dimension},</if>
+            <if test="scale != null">`scale` = #{scale},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteScoreRuleDimensionById" parameterType="Long">
+        update score_rule_dimension set del_flag='1' where id = #{id}
+    </delete>
+
+    <delete id="deleteScoreRuleDimensionByIds" parameterType="String">
+        update score_rule_dimension set del_flag='1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

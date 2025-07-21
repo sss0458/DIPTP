@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.StudentWorkContentMapper">
+    
+    <resultMap type="org.example.domain.StudentWorkContent" id="StudentWorkContentResult">
+        <result property="id"    column="id"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="taskTestId"    column="task_test_id"    />
+        <result property="workId"    column="work_id"    />
+        <result property="version"    column="version"    />
+        <result property="code"    column="code"    />
+        <result property="workPath"    column="work_path"    />
+        <result property="result"    column="result"    />
+        <result property="mainBody"    column="main_body"    />
+        <result property="summary"    column="summary"    />
+        <result property="lastDate"    column="last_date"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="teacherId"    column="teacher_id"    />
+    </resultMap>
+
+    <resultMap id="StudentWorkContentStudentWorkContentStepResult" type="org.example.domain.StudentWorkContent" extends="StudentWorkContentResult">
+        <collection property="studentWorkContentStepList" ofType="org.example.domain.StudentWorkContentStep" column="id" select="selectStudentWorkContentStepList" />
+    </resultMap>
+
+    <resultMap type="org.example.domain.StudentWorkContentStep" id="StudentWorkContentStepResult">
+        <result property="id"    column="id"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="taskTestId"    column="task_test_id"    />
+        <result property="workId"    column="work_id"    />
+        <result property="workContentId"    column="work_content_id"    />
+        <result property="sort"    column="sort"    />
+        <result property="content"    column="content"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="teacherId"    column="teacher_id"    />
+    </resultMap>
+
+    <sql id="selectStudentWorkContentVo">
+        select id, task_id, task_test_id, work_id, version, code, work_path, result, main_body, summary, last_date, status, remark, del_flag, teacher_id from student_work_content
+    </sql>
+
+    <select id="selectStudentWorkContentList" parameterType="org.example.domain.StudentWorkContent" resultMap="StudentWorkContentStudentWorkContentStepResult">
+        <include refid="selectStudentWorkContentVo"/>
+        <where>  
+            <if test="taskId != null "> and task_id = #{taskId}</if>
+            <if test="taskTestId != null "> and task_test_id = #{taskTestId}</if>
+            <if test="workId != null "> and work_id = #{workId}</if>
+            <if test="version != null "> and version = #{version}</if>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="workPath != null  and workPath != ''"> and work_path = #{workPath}</if>
+            <if test="result != null  and result != ''"> and `result` = #{result}</if>
+            <if test="mainBody != null  and mainBody != ''"> and main_body = #{mainBody}</if>
+            <if test="summary != null  and summary != ''"> and summary = #{summary}</if>
+            <if test="lastDate != null "> and last_date = #{lastDate}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="teacherId != null "> and teacher_id = #{teacherId}</if>
+            <if test="delFlag != null">and del_flag = '0' </if>
+        </where>
+    </select>
+    
+    <select id="selectStudentWorkContentById" parameterType="Long" resultMap="StudentWorkContentStudentWorkContentStepResult">
+        select id, task_id, task_test_id, work_id, version, code, work_path, result, main_body, summary, last_date, status, remark, del_flag, teacher_id
+        from student_work_content
+        where id = #{id}  and del_flag = '0'
+    </select>
+
+    <select id="selectStudentWorkContentStepList"  parameterType="Long" resultMap="StudentWorkContentStepResult">
+        select id, task_id, task_test_id, work_id, work_content_id, sort, content, status, remark, del_flag, teacher_id
+        from student_work_content_step
+        where work_content_id = #{id} and del_flag = '0'
+    </select>
+
+
+
+    <insert id="insertStudentWorkContent" parameterType="org.example.domain.StudentWorkContent" useGeneratedKeys="true" keyProperty="id">
+        insert into student_work_content
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">task_id,</if>
+            <if test="taskTestId != null">task_test_id,</if>
+            <if test="workId != null">work_id,</if>
+            <if test="version != null">version,</if>
+            <if test="code != null">code,</if>
+            <if test="workPath != null">work_path,</if>
+            <if test="result != null">`result`,</if>
+            <if test="mainBody != null">main_body,</if>
+            <if test="summary != null">summary,</if>
+            <if test="lastDate != null">last_date,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="teacherId != null">teacher_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">#{taskId},</if>
+            <if test="taskTestId != null">#{taskTestId},</if>
+            <if test="workId != null">#{workId},</if>
+            <if test="version != null">#{version},</if>
+            <if test="code != null">#{code},</if>
+            <if test="workPath != null">#{workPath},</if>
+            <if test="result != null">#{result},</if>
+            <if test="mainBody != null">#{mainBody},</if>
+            <if test="summary != null">#{summary},</if>
+            <if test="lastDate != null">#{lastDate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="teacherId != null">#{teacherId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStudentWorkContent" parameterType="org.example.domain.StudentWorkContent">
+        update student_work_content
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null">task_id = #{taskId},</if>
+            <if test="taskTestId != null">task_test_id = #{taskTestId},</if>
+            <if test="workId != null">work_id = #{workId},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="code != null">code = #{code},</if>
+            <if test="workPath != null">work_path = #{workPath},</if>
+            <if test="result != null">`result` = #{result},</if>
+            <if test="mainBody != null">main_body = #{mainBody},</if>
+            <if test="summary != null">summary = #{summary},</if>
+            <if test="lastDate != null">last_date = #{lastDate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStudentWorkContentById" parameterType="Long">
+        update student_work_content set del_flag = '1' where id = #{id}
+    </delete>
+
+    <delete id="deleteStudentWorkContentByIds" parameterType="String">
+        update student_work_content set del_flag = '1'  where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectStudentWorkContentListByWordId" resultType="org.example.domain.StudentWorkContent">
+        select id, task_id, task_test_id, work_id, version, code, work_path AS workPath, result, main_body, summary, last_date, status, remark, del_flag, teacher_id from student_work_content
+        where work_id = #{workId}
+    </select>
+
+    <select id="selectStudentWorkContentStepListByContentId"
+            resultType="org.example.domain.StudentWorkContentStep">
+        select id, task_id, task_test_id, work_id, work_content_id, sort, content, status, remark, del_flag, teacher_id
+        from student_work_content_step
+        where work_content_id = #{contentId}
+    </select>
+
+    <delete id="deleteStudentWorkContentStepByWorkContentIds" parameterType="String">
+        update student_work_content_step set del_flag = '1' where work_content_id in
+        <foreach item="workContentId" collection="array" open="(" separator="," close=")">
+            #{workContentId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteStudentWorkContentStepByWorkContentId" parameterType="Long">
+        update student_work_content_step set del_flag = '1' where work_content_id = #{workContentId}
+    </delete>
+
+    <insert id="batchStudentWorkContentStep">
+        insert into student_work_content_step( task_id, task_test_id, work_id, work_content_id, sort, content, status, remark, del_flag, teacher_id) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.taskId}, #{item.taskTestId}, #{item.workId}, #{item.workContentId}, #{item.sort}, #{item.content}, #{item.status}, #{item.remark}, '0' , #{item.teacherId})
+        </foreach>
+    </insert>
+
+
+</mapper>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.DataManageExtendMapper">
+
+    <resultMap type="org.example.domain.DataManageExtend" id="DataManageExtendResult">
+        <result property="id"    column="id"    />
+        <result property="dataManageId"    column="data_manage_id"    />
+        <result property="metaDataId"    column="meta_data_id"    />
+        <result property="content"    column="content"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap type="org.example.domain.vo.DataManageExtendVo" id="DataManageExtendVoResult">
+        <id property="id" column="dme_id"/>
+        <result property="dataManageId" column="dme_data_manage_id"/>
+        <result property="metaDataId" column="dme_meta_data_id"/>
+        <result property="content" column="dme_content"/>
+        <result property="status" column="dme_status"/>
+        <result property="delFlag" column="dme_del_flag"/>
+        <result property="remark" column="dme_remark"/>
+        <result property="metaDataName" column="md_name"/>
+        <result property="metaDataNameCode" column="md_name_code"/>
+    </resultMap>
+
+    <sql id="selectDataManageExtend">
+        select id, data_manage_id, meta_data_id, content, del_flag, status, remark from data_manage_extend
+    </sql>
+
+    <sql id="selectDataManageExtendVoJoin">
+        SELECT
+        dme.id as dme_id, dme.data_manage_id as dme_data_manage_id, dme.meta_data_id as dme_meta_data_id,
+        dme.content as dme_content, dme.del_flag as dme_del_flag, dme.status as dme_status,
+        dme.remark as dme_remark,
+        md.name as md_name, md.name_code as md_name_code
+        FROM data_manage_extend dme
+        LEFT JOIN meta_data md ON dme.meta_data_id = md.id
+        WHERE dme.del_flag = '0'
+    </sql>
+
+    <select id="selectDataManageExtendList" parameterType="org.example.domain.DataManageExtend" resultMap="DataManageExtendResult">
+        <include refid="selectDataManageExtend"/>
+        <where>
+            <if test="dataManageId != null "> and data_manage_id = #{dataManageId}</if>
+            <if test="metaDataId != null "> and meta_data_id = #{metaDataId}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            and del_flag = '0'
+        </where>
+    </select>
+
+    <select id="selectDataManageExtendById" parameterType="Long" resultMap="DataManageExtendResult">
+        <include refid="selectDataManageExtend"/>
+        where id = #{id} AND del_flag = '0'
+    </select>
+
+    <select id="selectDataManageExtendByDataManageId" parameterType="Long" resultMap="DataManageExtendResult">
+        <include refid="selectDataManageExtend"/>
+        where data_manage_id = #{dataManageId} AND del_flag = '0'
+    </select>
+
+    <select id="selectDataManageExtendVoList" parameterType="org.example.domain.DataManageExtend" resultMap="DataManageExtendVoResult">
+        <include refid="selectDataManageExtendVoJoin"/>
+        <where>
+            <if test="dataManageId != null "> and dme.data_manage_id = #{dataManageId}</if>
+            <if test="metaDataId != null "> and dme.meta_data_id = #{metaDataId}</if>
+            <if test="content != null  and content != ''"> and dme.content like concat('%', #{content}, '%')</if>
+            <if test="status != null  and status != ''"> and dme.status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectDataManageExtendVoById" parameterType="Long" resultMap="DataManageExtendVoResult">
+        <include refid="selectDataManageExtendVoJoin"/>
+        AND dme.id = #{id}
+    </select>
+
+    <select id="selectDataManageExtendVoListByDataManageId" parameterType="Long" resultMap="DataManageExtendVoResult">
+        <include refid="selectDataManageExtendVoJoin"/>
+        AND dme.data_manage_id = #{dataManageId}
+    </select>
+
+    <insert id="insertDataManageExtend" parameterType="org.example.domain.DataManageExtend" useGeneratedKeys="true" keyProperty="id">
+        insert into data_manage_extend
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="dataManageId != null">data_manage_id,</if>
+            <if test="metaDataId != null">meta_data_id,</if>
+            <if test="content != null">content,</if>
+            del_flag,
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="dataManageId != null">#{dataManageId},</if>
+            <if test="metaDataId != null">#{metaDataId},</if>
+            <if test="content != null">#{content},</if>
+            '0',
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDataManageExtend" parameterType="org.example.domain.DataManageExtend">
+        update data_manage_extend
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="dataManageId != null">data_manage_id = #{dataManageId},</if>
+            <if test="metaDataId != null">meta_data_id = #{metaDataId},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDataManageExtendById" parameterType="Long">
+        delete from data_manage_extend where id = #{id}
+    </delete>
+
+    <delete id="deleteDataManageExtendByIds" parameterType="java.util.Collection">
+        delete from data_manage_extend where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="updateDataManageExtendDelFlagById" parameterType="Long">
+        update data_manage_extend set del_flag = '1'
+        where id = #{id}
+    </update>
+
+    <insert id="batchInsertDataManageExtend" parameterType="java.util.List">
+        insert into data_manage_extend( data_manage_id, meta_data_id, content, del_flag, status, remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (
+            #{item.dataManageId},
+            #{item.metaDataId},
+            #{item.content},
+            '0', #{item.status},
+            #{item.remark}
+            )
+        </foreach>
+    </insert>
+    <insert id="batchInsertDataManageExtendVo" parameterType="java.util.List" >
+        insert into data_manage_extend( data_manage_id, meta_data_id, content, del_flag, status, remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (
+            #{item.dataManageId},
+            #{item.metaDataId},
+            #{item.content},
+            '0', #{item.status},
+            #{item.remark}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateDataManageExtendDelFlagByDataManageId" parameterType="Long">
+        update data_manage_extend set del_flag = '1'
+        where data_manage_id = #{dataManageId}
+    </update>
+
+    <update id="updateDataManageExtendDelFlagByIds" parameterType="java.util.Collection">
+        update data_manage_extend set del_flag = '1'
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateDataManageExtendDelFlagByDataManageIds" parameterType="java.util.Collection">
+        update data_manage_extend set del_flag = '1'
+        where data_manage_id in
+        <foreach item="dataManageId" collection="dataManageIds" open="(" separator="," close=")">
+            #{dataManageId}
+        </foreach>
+    </update>
+
+</mapper>

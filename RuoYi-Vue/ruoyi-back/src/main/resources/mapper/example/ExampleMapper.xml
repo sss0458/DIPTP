@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.ExampleMapper">
+    
+    <resultMap type="org.example.domain.Example" id="ExampleResult">
+        <result property="id"    column="id"    />
+        <result property="taskTitle"    column="task_title"    />
+        <result property="taskDescribe"    column="task_describe"    />
+        <result property="testTitle"    column="test_title"    />
+        <result property="dataType"    column="data_type"    />
+        <result property="testDescribe"    column="test_describe"    />
+        <result property="theory"    column="theory"    />
+        <result property="ruleId"    column="rule_id"    />
+        <result property="algorithmId"    column="algorithm_id"    />
+        <result property="dataManageId"    column="data_manage_id"    />
+        <result property="casePath"    column="case_path"    />
+        <result property="code"    column="code"    />
+        <result property="result"    column="result"    />
+        <result property="mainBody"    column="main_body"    />
+        <result property="summary"    column="summary"    />
+        <result property="step"    column="step"    />
+        <result property="grade"    column="grade"    />
+        <result property="workId"    column="work_id"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+    <resultMap type="org.example.domain.vo.ExampleVo" id="ExampleVoResult">
+        <result property="id" column="id"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="taskDescribe" column="task_describe"/>
+        <result property="testTitle" column="test_title"/>
+        <result property="dataType" column="data_type"/>
+        <result property="testDescribe" column="test_describe"/>
+        <result property="theory" column="theory"/>
+        <result property="ruleId" column="rule_id"/>
+        <result property="algorithmId" column="algorithm_id"/>
+        <result property="dataManageId" column="data_manage_id"/>
+        <result property="casePath" column="case_path"/>
+        <result property="code" column="code"/>
+        <result property="result" column="result"/>
+        <result property="mainBody" column="main_body"/>
+        <result property="summary" column="summary"/>
+        <result property="step" column="step"/>
+        <result property="grade" column="grade"/>
+        <result property="workId" column="work_id"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="rule_name" column="name"/>
+    </resultMap>
+
+    <resultMap id="ExampleExampleStepResult" type="org.example.domain.Example" extends="ExampleResult">
+        <collection property="exampleStepList" ofType="org.example.domain.ExampleStep" column="id" select="selectExampleStepList" />
+    </resultMap>
+
+    <resultMap type="org.example.domain.ExampleStep" id="ExampleStepResult">
+        <result property="id"    column="id"    />
+        <result property="exampleId"    column="example_id"    />
+        <result property="sort"    column="sort"    />
+        <result property="content"    column="content"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectExampleVo">
+        select id, task_title, task_describe, test_title, data_type, test_describe, theory, rule_id, algorithm_id, data_manage_id, case_path, code, result, main_body, summary, step, grade, work_id, status, remark, del_flag from example
+    </sql>
+
+    <select id="selectExampleList" parameterType="org.example.domain.Example" resultMap="ExampleResult">
+        <include refid="selectExampleVo"/>
+        <where>
+            and del_flag = '0'
+            <if test="taskTitle != null  and taskTitle != ''"> and task_title = #{taskTitle}</if>
+            <if test="taskDescribe != null  and taskDescribe != ''"> and task_describe = #{taskDescribe}</if>
+            <if test="testTitle != null  and testTitle != ''"> and test_title = #{testTitle}</if>
+            <if test="dataType != null  and dataType != ''"> and data_type = #{dataType}</if>
+            <if test="testDescribe != null  and testDescribe != ''"> and test_describe = #{testDescribe}</if>
+            <if test="theory != null  and theory != ''"> and theory = #{theory}</if>
+            <if test="ruleId != null "> and rule_id = #{ruleId}</if>
+            <if test="algorithmId != null "> and algorithm_id = #{algorithmId}</if>
+            <if test="dataManageId != null "> and data_manage_id = #{dataManageId}</if>
+            <if test="casePath != null  and casePath != ''"> and case_path = #{casePath}</if>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="result != null  and result != ''"> and result = #{result}</if>
+            <if test="mainBody != null  and mainBody != ''"> and main_body = #{mainBody}</if>
+            <if test="summary != null  and summary != ''"> and summary = #{summary}</if>
+            <if test="step != null  and step != ''"> and step = #{step}</if>
+            <if test="grade != null  and grade != ''"> and grade = #{grade}</if>
+            <if test="workId != null "> and work_id = #{workId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <sql id="selectExampleVoWithRuleName" >
+        SELECT
+            e.id,
+            e.task_title,
+            e.task_describe,
+            e.test_title,
+            e.data_type,
+            e.test_describe,
+            e.theory,
+            e.rule_id,
+            e.algorithm_id,
+            e.data_manage_id,
+            e.case_path,
+            e.code,
+            e.result,
+            e.main_body,
+            e.summary,
+            e.step,
+            e.grade,
+            e.work_id,
+            e.status,
+            e.remark,
+            e.del_flag,
+            r.name
+        FROM example e
+                 LEFT JOIN score_rule r ON e.rule_id = r.id
+    </sql>
+
+    <select id="selectExampleVoById" parameterType="Long" resultMap="ExampleVoResult">
+        <include refid="selectExampleVoWithRuleName"/>
+        where e.id = #{id} and e.del_flag = '0'
+    </select>
+
+    <select id="selectExampleVoList" resultMap="ExampleVoResult">
+        <include refid="selectExampleVoWithRuleName"/>
+        where e.del_flag = '0'
+    </select>
+
+
+    <select id="selectExampleById" parameterType="Long" resultMap="ExampleExampleStepResult">
+        select id, task_title, task_describe, test_title, data_type, test_describe, theory, rule_id, algorithm_id, data_manage_id, case_path, code, result, main_body, summary, step, grade, work_id, status, remark, del_flag
+        from example
+        where id = #{id} and del_flag='0'
+    </select>
+
+    <select id="selectExampleStepList" resultMap="ExampleStepResult">
+        select id, example_id, sort, content, status, remark, del_flag
+        from example_step
+        where example_id = #{example_id} and del_flag='0'
+    </select>
+
+    <insert id="insertExample" parameterType="org.example.domain.Example" useGeneratedKeys="true" keyProperty="id">
+        insert into example
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskTitle != null">task_title,</if>
+            <if test="taskDescribe != null">task_describe,</if>
+            <if test="testTitle != null">test_title,</if>
+            <if test="dataType != null">data_type,</if>
+            <if test="testDescribe != null">test_describe,</if>
+            <if test="theory != null">theory,</if>
+            <if test="ruleId != null">rule_id,</if>
+            <if test="algorithmId != null">algorithm_id,</if>
+            <if test="dataManageId != null">data_manage_id,</if>
+            <if test="casePath != null">case_path,</if>
+            <if test="code != null">code,</if>
+            <if test="result != null">result,</if>
+            <if test="mainBody != null">main_body,</if>
+            <if test="summary != null">summary,</if>
+            <if test="step != null">step,</if>
+            <if test="grade != null">grade,</if>
+            <if test="workId != null">work_id,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskTitle != null">#{taskTitle},</if>
+            <if test="taskDescribe != null">#{taskDescribe},</if>
+            <if test="testTitle != null">#{testTitle},</if>
+            <if test="dataType != null">#{dataType},</if>
+            <if test="testDescribe != null">#{testDescribe},</if>
+            <if test="theory != null">#{theory},</if>
+            <if test="ruleId != null">#{ruleId},</if>
+            <if test="algorithmId != null">#{algorithmId},</if>
+            <if test="dataManageId != null">#{dataManageId},</if>
+            <if test="casePath != null">#{casePath},</if>
+            <if test="code != null">#{code},</if>
+            <if test="result != null">#{result},</if>
+            <if test="mainBody != null">#{mainBody},</if>
+            <if test="summary != null">#{summary},</if>
+            <if test="step != null">#{step},</if>
+            <if test="grade != null">#{grade},</if>
+            <if test="workId != null">#{workId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateExample" parameterType="org.example.domain.Example">
+        update example
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskTitle != null">task_title = #{taskTitle},</if>
+            <if test="taskDescribe != null">task_describe = #{taskDescribe},</if>
+            <if test="testTitle != null">test_title = #{testTitle},</if>
+            <if test="dataType != null">data_type = #{dataType},</if>
+            <if test="testDescribe != null">test_describe = #{testDescribe},</if>
+            <if test="theory != null">theory = #{theory},</if>
+            <if test="ruleId != null">rule_id = #{ruleId},</if>
+            <if test="algorithmId != null">algorithm_id = #{algorithmId},</if>
+            <if test="dataManageId != null">data_manage_id = #{dataManageId},</if>
+            <if test="casePath != null">case_path = #{casePath},</if>
+            <if test="code != null">code = #{code},</if>
+            <if test="result != null">result = #{result},</if>
+            <if test="mainBody != null">main_body = #{mainBody},</if>
+            <if test="summary != null">summary = #{summary},</if>
+            <if test="step != null">step = #{step},</if>
+            <if test="grade != null">grade = #{grade},</if>
+            <if test="workId != null">work_id = #{workId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExampleById" parameterType="Long">
+        update example set del_flag='1' where id = #{id}
+    </delete>
+
+    <delete id="deleteExampleByIds" parameterType="String">
+        update example set del_flag='1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteExampleStepByExampleIds" parameterType="String">
+        update example_step set del_flag='1' where example_id in
+        <foreach item="exampleId" collection="array" open="(" separator="," close=")">
+            #{exampleId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteExampleStepByExampleId" parameterType="Long">
+        update example_step set del_flag='1' where example_id = #{exampleId}
+    </delete>
+
+    <insert id="batchExampleStep">
+        insert into example_step(  example_id, sort, content, status, remark, del_flag) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (  #{item.exampleId}, #{item.sort}, #{item.content}, #{item.status}, #{item.remark}, '0')
+        </foreach>
+    </insert>
+
+    <!-- ============== 新增的双字段查询 ============== -->
+    <select id="selectByTaskTitleAndTestTitle" resultMap="ExampleResult">
+        <include refid="selectExampleVo"/>
+        WHERE task_title = #{task_title}
+        AND test_title = #{test_title}
+        AND del_flag = '0'
+        LIMIT 1
+    </select>
+
+    <!-- ==================== 新增统计功能 SQL ==================== -->
+
+    <!-- 统计案例总数 -->
+    <select id="countTotal" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM example
+        WHERE del_flag = '0'
+    </select>
+
+    <!-- 按状态统计案例数量 -->
+    <select id="countByStatus" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM example
+        WHERE del_flag = '0' AND status = #{status}
+    </select>
+
+    <!-- 按字段分组统计（通用方法） -->
+    <select id="countGroupBy" resultType="java.util.Map">
+        SELECT ${column} AS `key`, COUNT(*) AS value
+        FROM example
+        WHERE del_flag = '0'
+        GROUP BY ${column}
+    </select>
+
+    <!-- 查询热门案例（使用次数排名） -->
+    <select id="selectTopExamples" resultType="java.util.Map">
+        SELECT
+            e.id,
+            e.task_title AS taskTitle,
+            e.test_title AS testTitle,
+            COUNT(t.id) AS usageCount
+        FROM example e
+                 LEFT JOIN teach_task_test t ON e.id = t.case_id
+        WHERE e.del_flag = '0'
+        GROUP BY e.id
+        ORDER BY usageCount DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 按日期统计新增案例（用于趋势图） -->
+   <!-- <select id="countByDateRange" resultType="java.util.Map">
+        SELECT
+            DATE_FORMAT(create_time, '%Y-%m-%d') AS date,
+            COUNT(*) AS count
+        FROM example
+        WHERE del_flag = '0'
+          AND create_time BETWEEN #{beginTime} AND #{endTime}
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d')
+        ORDER BY date
+    </select>-->
+
+
+</mapper>

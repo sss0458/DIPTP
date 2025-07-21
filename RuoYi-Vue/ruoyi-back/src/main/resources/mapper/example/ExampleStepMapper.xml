@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.ExampleStepMapper">
+    
+    <resultMap type="org.example.domain.ExampleStep" id="ExampleStepResult">
+        <result property="id"    column="id"    />
+        <result property="exampleId"    column="example_id"    />
+        <result property="sort"    column="sort"    />
+        <result property="content"    column="content"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectExampleStepVo">
+        select id, example_id, sort, content, status, remark, del_flag from example_step
+    </sql>
+
+    <select id="selectExampleStepList" parameterType="org.example.domain.ExampleStep" resultMap="ExampleStepResult">
+        <include refid="selectExampleStepVo"/>
+        <where>
+            del_flag = '0'
+            <if test="exampleId != null "> and example_id = #{exampleId}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectExampleStepById" parameterType="Long" resultMap="ExampleStepResult">
+        <include refid="selectExampleStepVo"/>
+        where id = #{id} and del_flag='0'
+    </select>
+
+    <insert id="insertExampleStep" parameterType="org.example.domain.ExampleStep" useGeneratedKeys="true" keyProperty="id">
+        insert into example_step
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="exampleId != null">example_id,</if>
+            <if test="sort != null">sort,</if>
+            <if test="content != null">content,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="exampleId != null">#{exampleId},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="content != null">#{content},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateExampleStep" parameterType="org.example.domain.ExampleStep">
+        update example_step
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="exampleId != null">example_id = #{exampleId},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExampleStepById" parameterType="Long">
+        update example_step set del_flag ='1' where id = #{id}
+    </delete>
+
+    <delete id="deleteExampleStepByIds" parameterType="String">
+        update example_step set del_flag ='1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.AlgorithmMapper">
+    
+    <resultMap type="org.example.domain.Algorithm" id="AlgorithmResult">
+        <result property="id"    column="id"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="path"       column="path" />
+        <result property="kind"   column="kind"/>
+    </resultMap>
+
+    <sql id="selectAlgorithmVo">
+        select id, status, remark, del_flag ,path , kind from algorithm
+    </sql>
+
+    <select id="selectAlgorithmList" parameterType="org.example.domain.Algorithm" resultMap="AlgorithmResult">
+        <include refid="selectAlgorithmVo"/>
+        <where>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="kind != null">and kind = #{kind}</if>
+            and del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectAlgorithmById" parameterType="Long" resultMap="AlgorithmResult">
+        <include refid="selectAlgorithmVo"/>
+        where id = #{id} and del_flag='0'
+    </select>
+
+    <insert id="insertAlgorithm" parameterType="org.example.domain.Algorithm" useGeneratedKeys="true" keyProperty="id">
+        insert into algorithm
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="path != null">`path`,</if>
+            <if test="kind != null">kind</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="path != null">#{path},</if>
+            <if test="kind != null">#{kind}</if>
+         </trim>
+    </insert>
+
+    <update id="updateAlgorithm" parameterType="org.example.domain.Algorithm">
+        update algorithm
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="path != null">`path` = #{path},</if>
+            <if test="kind != null">kind = #{kind}</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAlgorithmById" parameterType="Long">
+        update algorithm set del_flag='1' where id = #{id}
+    </delete>
+
+    <delete id="deleteAlgorithmByIds" parameterType="String">
+        update algorithm set del_flag='1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
